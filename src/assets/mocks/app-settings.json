@@ -1,0 +1,33 @@
+{
+    "app": {
+        "name": "dry"
+    },
+    "menu": [
+        {
+            "label": "Dashboard",
+            "icon": "dashboard",
+            "routerLink": "/"
+        },
+        {
+            "label": "Components",
+            "icon": "search",
+            "children": [
+                {
+                    "label": "submenu1",
+                    "icon": "dashboard",
+                    "routerLink": "/components"
+                },
+                {
+                    "label": "submenu2",
+                    "icon": "dashboard",
+                    "routerLink": "/components2"
+                },
+                {
+                    "label": "submenu3",
+                    "icon": "dashboard",
+                    "routerLink": "/components3"
+                }
+            ]
+        }
+    ]
+}

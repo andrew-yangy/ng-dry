@@ -1,0 +1,47 @@
+<a *ngIf="item.url && !item.routerLink && !item.children"
+    [attr.href]="item.url"
+    [attr.target]="item.target"
+    (click)="onSelectItem(item)"
+    (mouseenter)="onHoverItem(item)">
+    <i *ngIf="item.icon"
+        class="material-icons">{{item.icon}}</i>
+    <span>{{item.label}}</span>
+    <span *ngIf="item.badge"
+        class="menuitem-badge">{{item.badge}}</span>
+</a>
+<a *ngIf="item.routerLink && !item.url && !item.children"
+    [routerLink]="item.routerLink"
+    [queryParams]="item.queryParams"
+    [class.active-menuitem-routerlink]="item.selected"
+    (click)="onSelectItem(item)"
+    (mouseenter)="onHoverItem(item)">
+    <i *ngIf="item.icon"
+        class="material-icons">{{item.icon}}</i>
+    <span>{{item.label}}</span>
+</a>
+<a *ngIf="item.children"
+    (click)="$event.preventDefault(); onToggleSubMenu(item);"
+    [attr.target]="item.target"
+    [class.active-menuitem-routerlink]="item.selected"
+    (mouseenter)="onHoverItem(item)"
+    href="#">
+    <i *ngIf="item.icon"
+        class="material-icons">{{item.icon}}</i>
+    <span>{{item.label}}</span>
+    <i class="material-icons submenu-icon">
+        {{item.expanded ? 'keyboard_arrow_up' : 'keyboard_arrow_down'}}
+    </i>
+</a>
+<div class="layout-menu-tooltip">
+    <div class="layout-menu-tooltip-arrow"></div>
+    <div class="layout-menu-tooltip-text">{{item.label}}</div>
+</div>
+<ul *ngIf="item.children"
+    [@children]="item.expanded ? 'visible' : 'hidden'">
+    <li ndMenuItem
+        *ngFor="let item of item.children"
+        [item]="item"
+        (hoverItem)="onHoverItem($event)"
+        (toggleSubMenu)="onToggleSubMenu($event)"
+        (selectItem)="onSelectItem($event)"></li>
+</ul>
