@@ -1,23 +1,29 @@
 <div class="topbar clearfix">
-    <a class="topbar-left" routerLink="">
+    <a class="topbar-left"
+        routerLink="">
         <h2>NG-DRY</h2>
     </a>
 
     <div class="topbar-right">
-        <a id="menu-button" href="#" (click)="app.onMenuButtonClick($event)">
+        <a id="menu-button"
+            href="#"
+            (click)="$event.preventDefault();toggle()">
             <i></i>
         </a>
 
-        <ul class="topbar-items animated fadeInDown" [ngClass]="{'topbar-items-visible': app.topbarMenuActive}">
-            <li #profile class="profile-item" *ngIf="app.profileMode==='top'||app.isHorizontal()" [ngClass]="{'active-top-menu':app.activeTopbarItem === profile}">
+        <ul class="topbar-items animated fadeInDown">
+            <li #profile
+                class="profile-item">
 
-                <a href="#" (click)="app.onTopbarItemClick($event,profile)">
-                    <img class="profile-image" src="assets/layout/images/avatar.jpg">
+                <a href="#">
+                    <img class="profile-image"
+                        src="assets/layout/images/avatar.jpg">
                 </a>
 
                 <ul class="ultima-menu animated fadeInDown">
                     <li role="menuitem">
-                        <a [routerLink]="" (click)="logout()">
+                        <a [routerLink]=""
+                            (click)="logout()">
                             <i class="material-icons">power_settings_new</i>
                             <span>Logout</span>
                         </a>

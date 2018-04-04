@@ -9,6 +9,7 @@ import { BreadcrumbComponent } from './breadcrumb/breadcrumb.component';
 import { FooterComponent } from './footer/footer.component';
 import { RouterModule } from '@angular/router';
 import { LayoutComponent } from './layout/layout.component';
+import { LayoutService } from './layout/layout.service';
 
 const COMPONENTS = [
     LayoutComponent,
@@ -33,7 +34,8 @@ export class ThemeModule {
             ngModule: ThemeModule,
             providers: [
                 BreadcrumbService,
-                MenuService
+                MenuService,
+                LayoutService
             ],
         };
     }

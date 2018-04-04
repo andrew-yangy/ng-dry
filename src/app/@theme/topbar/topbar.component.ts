@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { PagesComponent } from '../../pages/pages.component';
+import { LayoutService } from '../layout/layout.service';
 
 @Component({
 	selector: 'nd-topbar',
@@ -14,14 +14,22 @@ export class TopbarComponent implements OnInit {
 	selectedSpace: string;
 
 	constructor(
-		public app: PagesComponent,
+		private layoutService: LayoutService,
 		private router: Router
 	) { }
 
 	ngOnInit() {
+		this.layoutService
+			.onStateChange()
+			.subscribe(state => {
+				// console.log(state);
+			})
 	}
-	selectSpace(space) {
+
+	toggle() {
+		this.layoutService.toggleState();
 	}
+
 	logout() {
 	}
 }

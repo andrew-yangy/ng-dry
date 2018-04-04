@@ -37,7 +37,7 @@
     <div class="layout-menu-tooltip-text">{{item.label}}</div>
 </div>
 <ul *ngIf="item.children"
-    [@children]="item.expanded ? 'visible' : 'hidden'">
+    [@children]="isSlim ? 'hidden' : item.expanded ? 'visibleAnimated' : 'hiddenAnimated'">
     <li ndMenuItem
         *ngFor="let item of item.children"
         [item]="item"

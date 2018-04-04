@@ -3,6 +3,7 @@ import { Location } from '@angular/common';
 import { ReplaySubject } from 'rxjs/ReplaySubject';
 import { Observable } from 'rxjs/Observable';
 import { share } from 'rxjs/operators';
+import { LayoutService } from '../layout/layout.service';
 export interface MenuItem {
     label?: string;
     icon?: string;
@@ -34,7 +35,8 @@ export class MenuService {
     items$ = new ReplaySubject<MenuItem[]>(1);
 
     constructor(
-        private location: Location
+        private location: Location,
+        private layoutService: LayoutService
     ) {
     }
 
@@ -50,8 +52,7 @@ export class MenuService {
         items.some(item => {
             if (parent) item.parent = parent;
             return this.selectItemByUrl(item)
-        }
-        );
+        });
     }
     resetItems(items: MenuItem[]) {
         items.forEach(i => this.resetItem(i));
