@@ -9,7 +9,7 @@ export class LayoutService {
     static readonly STATE_SLIM: string = 'slim';
     static readonly STATE_HORIZONTAL: string = 'horizontal';
 
-    private state$ = new BehaviorSubject<string>(LayoutService.STATE_SLIM);
+    private state$ = new BehaviorSubject<string>(LayoutService.STATE_STATIC);
 
     onStateChange() {
         return this.state$.pipe(

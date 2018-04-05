@@ -1,4 +1,4 @@
-import { Component, Input, OnInit, OnDestroy, Output, EventEmitter, AfterViewInit } from '@angular/core';
+import { Component, Input, OnInit, OnDestroy, Output, EventEmitter, AfterViewInit, HostListener } from '@angular/core';
 import { animate, state, style, transition, trigger } from '@angular/animations';
 import { PagesComponent } from '../../pages/pages.component';
 import { MenuService, MenuItem } from './menu.service';
@@ -6,6 +6,8 @@ import { takeWhile, filter, map, startWith, withLatestFrom, switchMap, switchMap
 import { Router, NavigationEnd } from '@angular/router';
 import { LayoutService } from '../layout/layout.service';
 import { combineLatest } from 'rxjs/observable/combineLatest';
+import { zip } from 'rxjs/observable/zip';
+import { of } from 'rxjs/observable/of';
 
 @Component({
 	selector: 'nd-menu',
@@ -14,13 +16,12 @@ import { combineLatest } from 'rxjs/observable/combineLatest';
 			<li ndMenuItem *ngFor="let item of items"
 					[item]="item"
 					[layoutState]="layoutState"
-					(hoverItem)="onHoverItem($event)"
 					(toggleSubMenu)="onToggleSubMenu($event)"
 					(selectItem)="onSelectItem($event)"></li>
 		</ul>
     `
 })
-export class MenuComponent implements OnInit, AfterViewInit, OnDestroy {
+export class MenuComponent implements OnInit, OnDestroy {
 	@Input() items: MenuItem[];
 
 	layoutState: string;
@@ -38,11 +39,13 @@ export class MenuComponent implements OnInit, AfterViewInit, OnDestroy {
 			.getMenus()
 			.pipe(takeWhile(() => this.alive))
 			.subscribe(data => this.items = data);
+
 		this.layoutService.onStateChange()
 			.pipe(takeWhile(() => this.alive))
 			.subscribe(state => {
 				this.layoutState = state;
 			});
+
 		this.router.events
 			.pipe(
 				takeWhile(() => this.alive),
@@ -52,12 +55,7 @@ export class MenuComponent implements OnInit, AfterViewInit, OnDestroy {
 				this.menuService.resetItems(this.items);
 				this.menuService.updateMenus(this.items);
 			});
-	}
-	ngAfterViewInit() {
-		setTimeout(() => this.menuService.updateMenus(this.items));
-	}
-
-	onHoverItem(item: MenuItem) {
+		this.menuService.updateMenus(this.items)
 	}
 
 	onToggleSubMenu(item: MenuItem) {
@@ -115,49 +113,48 @@ export class MenuComponent implements OnInit, AfterViewInit, OnDestroy {
 	]
 })
 export class AppSubMenuComponent implements OnInit {
+	private _state: string;
+	private isSlim: boolean;
 	@Input() item: MenuItem;
 	@Input()
 	set layoutState(state: string) {
+		this._state = state;
 		this.isSlim = state === LayoutService.STATE_SLIM;
+		this.updateAnimatedState();
 	}
-
-	@Output() hoverItem = new EventEmitter<MenuItem>();
+	get state() {
+		return this._state;
+	}
 	@Output() toggleSubMenu = new EventEmitter<MenuItem>();
 	@Output() selectItem = new EventEmitter<MenuItem>();
 
-	isSlim: boolean;
-
-	constructor() { }
+	@HostListener('mouseenter')
+	onMouseEnter() {
+		if (this.isSlim) {
+			this.item.animatedState = 'visible'
+		}
+	}
+	@HostListener('mouseleave')
+	onMouseLeave() {
+		if (this.isSlim && this.item.children) {
+			this.item.animatedState = 'hidden';
+		}
+	}
+	constructor(private layoutService: LayoutService) { }
 
 	ngOnInit() {
-		// combineLatest(
-		// 	this.layoutService.onStateChange(),
-		// 	this.hoverItem
-		// )
-		// 	.pipe(
-		// 		filter(([state, hoverItem]: [string, MenuItem]) => !!hoverItem.children),
-		// 		map(([state, hoverItem]: [string, MenuItem]) => {
-		// 			console.log(123);
-		// 			if (state === LayoutService.STATE_SLIM) {
-		// 				return 'visible';
-		// 			}
-		// 		})
-		// 	)
-		// 	.subscribe((animatedState) => {
-		// 		console.log(animatedState);
-		// 		this.animatedState = animatedState;
-		// 	})
 	}
 
 	onToggleSubMenu(item: MenuItem) {
 		this.toggleSubMenu.emit(item);
-	}
-
-	onHoverItem(item: MenuItem) {
-		this.hoverItem.emit(item);
+		this.updateAnimatedState();
 	}
 
 	onSelectItem(item: MenuItem) {
 		this.selectItem.emit(item);
+		this.updateAnimatedState();
+	}
+	updateAnimatedState() {
+		this.item.animatedState = this.isSlim ? 'hidden' : this.item.expanded ? 'visibleAnimated' : 'hiddenAnimated';
 	}
 }

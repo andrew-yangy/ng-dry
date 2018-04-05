@@ -4,6 +4,7 @@ import { ReplaySubject } from 'rxjs/ReplaySubject';
 import { Observable } from 'rxjs/Observable';
 import { share } from 'rxjs/operators';
 import { LayoutService } from '../layout/layout.service';
+import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 export interface MenuItem {
     label?: string;
     icon?: string;
@@ -28,6 +29,7 @@ export interface MenuItem {
     title?: string;
     id?: string;
     selected?: boolean;
+    animatedState?: string;
 }
 
 @Injectable()
@@ -40,7 +42,7 @@ export class MenuService {
     ) {
     }
 
-    addMenu(items: MenuItem[]) {
+    addMenus(items: MenuItem[]) {
         if (Array.isArray(items)) this.items$.next(items);
     }
 
@@ -54,6 +56,7 @@ export class MenuService {
             return this.selectItemByUrl(item)
         });
     }
+
     resetItems(items: MenuItem[]) {
         items.forEach(i => this.resetItem(i));
     }

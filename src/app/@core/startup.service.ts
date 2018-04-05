@@ -20,7 +20,7 @@ export class StartupService {
                         return appSettings;
                     })
                 ).subscribe(
-                    (appSettings: any) => { this.menuService.addMenu(appSettings.menu) },
+                    (appSettings: any) => { this.menuService.addMenus(appSettings.menu) },
                     () => { },
                     () => {
                         resolve(null);

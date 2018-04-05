@@ -14,6 +14,6 @@ export class LayoutComponent implements OnInit {
     ngOnInit() {
         this.layoutService
             .onStateChange()
-            .subscribe(state => this.state = state)
+            .subscribe(state => this.state = state);
     }
 }
