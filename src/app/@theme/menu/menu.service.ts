@@ -72,16 +72,13 @@ export class MenuService {
         this.selectParent(item);
     }
 
-    submenuToggle(item: MenuItem) {
-        this.layoutService.isSlim()
-            .subscribe(isSlim => {
-                if (isSlim) {
-                    this.setExpanded(item, true);
-                    this.layoutService.toggleState();
-                } else {
-                    this.setExpanded(item);
-                }
-            })
+    submenuToggle(item: MenuItem, layoutState: string) {
+        if (layoutState === LayoutService.STATE_SLIM) {
+            this.setExpanded(item, true);
+            this.layoutService.toggleState();
+        } else {
+            this.setExpanded(item);
+        }
     }
 
     onAnimatedState(item: MenuItem) {
@@ -107,7 +104,6 @@ export class MenuService {
             item.expandListener
         ).pipe(
             map(([isSlim, expanded]) => isSlim ? 'hidden' : expanded ? 'visibleAnimated' : 'hiddenAnimated'),
-            tap(res => console.log(res))
         )
     }
 

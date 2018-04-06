@@ -24,6 +24,8 @@ import { Observable } from 'rxjs/Observable';
 })
 export class MenuComponent implements OnInit, OnDestroy {
 	@Input() items: MenuItem[];
+
+	layoutState: string;
 	private alive: boolean = true;
 
 	constructor(
@@ -39,6 +41,12 @@ export class MenuComponent implements OnInit, OnDestroy {
 			.pipe(takeWhile(() => this.alive))
 			.subscribe(data => this.items = data);
 
+		this.layoutService.onStateChange()
+			.pipe(takeWhile(() => this.alive))
+			.subscribe(state => {
+				this.layoutState = state;
+			});
+
 		this.router.events
 			.pipe(
 				takeWhile(() => this.alive),
@@ -53,7 +61,7 @@ export class MenuComponent implements OnInit, OnDestroy {
 	}
 
 	onToggleSubMenu(item: MenuItem) {
-		this.menuService.submenuToggle(item);
+		this.menuService.submenuToggle(item, this.layoutState);
 	}
 
 	onSelectItem(item: MenuItem) {
