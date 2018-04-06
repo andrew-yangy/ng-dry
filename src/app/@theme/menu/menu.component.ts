@@ -8,6 +8,8 @@ import { LayoutService } from '../layout/layout.service';
 import { combineLatest } from 'rxjs/observable/combineLatest';
 import { zip } from 'rxjs/observable/zip';
 import { of } from 'rxjs/observable/of';
+import { BehaviorSubject } from 'rxjs/BehaviorSubject';
+import { Observable } from 'rxjs/Observable';
 
 @Component({
 	selector: 'nd-menu',
@@ -15,7 +17,6 @@ import { of } from 'rxjs/observable/of';
 		<ul class="ultima-menu ultima-main-menu">
 			<li ndMenuItem *ngFor="let item of items"
 					[item]="item"
-					[layoutState]="layoutState"
 					(toggleSubMenu)="onToggleSubMenu($event)"
 					(selectItem)="onSelectItem($event)"></li>
 		</ul>
@@ -23,8 +24,6 @@ import { of } from 'rxjs/observable/of';
 })
 export class MenuComponent implements OnInit, OnDestroy {
 	@Input() items: MenuItem[];
-
-	layoutState: string;
 	private alive: boolean = true;
 
 	constructor(
@@ -40,12 +39,6 @@ export class MenuComponent implements OnInit, OnDestroy {
 			.pipe(takeWhile(() => this.alive))
 			.subscribe(data => this.items = data);
 
-		this.layoutService.onStateChange()
-			.pipe(takeWhile(() => this.alive))
-			.subscribe(state => {
-				this.layoutState = state;
-			});
-
 		this.router.events
 			.pipe(
 				takeWhile(() => this.alive),
@@ -55,16 +48,12 @@ export class MenuComponent implements OnInit, OnDestroy {
 				this.menuService.resetItems(this.items);
 				this.menuService.updateMenus(this.items);
 			});
-		this.menuService.updateMenus(this.items)
+		this.menuService.initItems(this.items);
+		this.menuService.updateMenus(this.items);
 	}
 
 	onToggleSubMenu(item: MenuItem) {
-		if (this.layoutState === LayoutService.STATE_SLIM) {
-			item.expanded = true;
-			this.layoutService.toggleState();
-		} else {
-			item.expanded = !item.expanded;
-		}
+		this.menuService.submenuToggle(item);
 	}
 
 	onSelectItem(item: MenuItem) {
@@ -113,48 +102,34 @@ export class MenuComponent implements OnInit, OnDestroy {
 	]
 })
 export class AppSubMenuComponent implements OnInit {
-	private _state: string;
-	private isSlim: boolean;
+
 	@Input() item: MenuItem;
-	@Input()
-	set layoutState(state: string) {
-		this._state = state;
-		this.isSlim = state === LayoutService.STATE_SLIM;
-		this.updateAnimatedState();
-	}
-	get state() {
-		return this._state;
-	}
 	@Output() toggleSubMenu = new EventEmitter<MenuItem>();
 	@Output() selectItem = new EventEmitter<MenuItem>();
 
 	@HostListener('mouseenter')
 	onMouseEnter() {
-		if (this.isSlim) {
-			this.item.animatedState = 'visible'
-		}
+		this.item.hoverListener.next(true);
 	}
 	@HostListener('mouseleave')
 	onMouseLeave() {
-		if (this.isSlim && this.item.children) {
-			this.item.animatedState = 'hidden';
-		}
+		this.item.hoverListener.next(false);
 	}
-	constructor(private layoutService: LayoutService) { }
+	animatedState$?: Observable<string>;
+
+	constructor(
+		private menuService: MenuService,
+		private layoutService: LayoutService) { }
 
 	ngOnInit() {
+		this.animatedState$ = this.menuService.onAnimatedState(this.item);
 	}
 
 	onToggleSubMenu(item: MenuItem) {
 		this.toggleSubMenu.emit(item);
-		this.updateAnimatedState();
 	}
 
 	onSelectItem(item: MenuItem) {
 		this.selectItem.emit(item);
-		this.updateAnimatedState();
-	}
-	updateAnimatedState() {
-		this.item.animatedState = this.isSlim ? 'hidden' : this.item.expanded ? 'visibleAnimated' : 'hiddenAnimated';
 	}
 }

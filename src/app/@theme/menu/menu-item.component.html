@@ -26,7 +26,7 @@
         class="material-icons">{{item.icon}}</i>
     <span>{{item.label}}</span>
     <i class="material-icons submenu-icon">
-        {{item.expanded ? 'keyboard_arrow_up' : 'keyboard_arrow_down'}}
+        {{(item.expandListener | async) ? 'keyboard_arrow_up' : 'keyboard_arrow_down'}}
     </i>
 </a>
 <div *ngIf="!item.children"
@@ -35,7 +35,7 @@
     <div class="layout-menu-tooltip-text">{{item.label}}</div>
 </div>
 <ul *ngIf="item.children"
-    [@children]="item.animatedState">
+    [@children]="animatedState$ | async">
     <li ndMenuItem
         *ngFor="let item of item.children"
         [item]="item"

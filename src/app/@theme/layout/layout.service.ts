@@ -23,4 +23,12 @@ export class LayoutService {
     toggleState() {
         this.state$.next(null);
     }
+
+    isSlim() {
+        return this.onStateChange()
+            .pipe(
+                map(state => state === LayoutService.STATE_SLIM)
+            )
+
+    }
 }
