@@ -19,9 +19,8 @@
       "testTsconfig": "tsconfig.spec.json",
       "prefix": "app",
       "styles": [
-        "../node_modules/primeng/resources/primeng.min.css",
-        "./assets/layout/css/layout-onestop.scss",
-        "./assets/theme/theme-onestop.scss",
+        "./assets/layout/css/layout.scss",
+        "./assets/theme/theme.scss",
         "styles.css"
       ],
       "scripts": [],

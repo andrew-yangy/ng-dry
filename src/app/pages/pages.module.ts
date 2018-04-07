@@ -4,10 +4,11 @@ import { PagesRoutingModule } from "./pages-routing.module";
 import { PagesComponent } from "./pages.component";
 import { DashboardComponent } from "./dashboard/dashboard.component";
 import { ThemeModule } from "../@theme/theme.module";
+import { SharedModule } from "../shared/shared.module";
 
 @NgModule({
     imports: [
-        CommonModule,
+        SharedModule,
         PagesRoutingModule,
         ThemeModule
     ],
